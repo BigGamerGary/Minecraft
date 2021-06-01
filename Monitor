@@ -1,0 +1,87 @@
+function mysplit (inputstr, sep)
+    if sep == nil then
+            sep = "%s"
+    end
+    local t={}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+            table.insert(t, str)
+    end
+    return t
+end
+
+print("Software Control is On...")
+
+local energy = 0
+local coolant = 0
+local fuel = 0
+local heatedCoolant = 0
+local waste = 0
+local damage = 0
+local temperature = 0
+local status = 0
+local monitor = peripheral.wrap("right")
+local id, stats, protocol = 0
+local splitStats = 0
+rednet.open("left")
+monitorX,monitorY = monitor.getSize()
+
+function getStats()
+    id, stats, protocol = rednet.receive(60)
+    splitStats = mysplit(stats)
+    energy = math.floor(splitStats[1]*10000)/100
+    coolant = math.floor(splitStats[2]*10000)/100
+    fuel = math.floor(splitStats[3]*10000)/100
+    heatedCoolant = math.floor(splitStats[4]*10000)/100
+    waste = math.floor(splitStats[5]*10000)/100
+    damage = math.floor(splitStats[6])
+    temperature = math.floor(splitStats[7])
+    status = splitStats[8]
+end
+
+function writeMonitor()
+    monitor.setBackgroundColour(colours.black)
+    monitor.clear()
+    monitor.setCursorPos(1,1)
+    -- Print Energy and bar
+    centreText("Energy:" .. energy .. "%", 1, colours.black, colours.green)
+    drawBar(energy, 2, colours.lightGrey, colours.green)
+    -- Print Fuel and bar
+    centreText("Fuel Tank:" .. fuel .. "%", 4, colours.black, colours.lime)
+    drawBar(fuel, 5, colours.lightGrey, colours.lime)
+    -- Print Coolant and bar
+    centreText("Coolant Tank:" .. coolant .. "%", 7, colours.black, colours.lightBlue)
+    drawBar(coolant, 8, colours.lightGrey, colours.lightBlue)
+    -- Print Waste and bar
+    centreText("Waste Tank:" .. waste .. "%", 10, colours.black, colours.brown)
+    drawBar(waste, 11, colours.lightGrey, colours.brown)
+    -- Print Reactor status
+    centreText("Status:" .. status, 13, colours.black, colours.red)
+
+end
+
+function centreText(text, line, backColour, textColour)
+    monitor.setBackgroundColour(backColour)
+    monitor.setTextColour(textColour)
+    length = (string.len(text))
+    difference = math.floor(monitorX-length)
+    x = math.floor(difference/2)
+    monitor.setCursorPos(x + 1, line)
+    monitor.write(text)
+end 
+
+function drawBar(value, line, backColour, barColour)
+    bar = math.floor(((value/100)*(monitorX-2))+0.5)
+    monitor.setCursorPos(2,line)
+    monitor.setBackgroundColour(backColour)
+    monitor.write(string.rep(" ", (monitorX-2)))
+    monitor.setCursorPos(2,line)
+    monitor.setBackgroundColour(barColour)
+    monitor.write(string.rep(" ", bar))
+end
+
+while(true) do
+    getStats()
+    writeMonitor()
+    sleep(1)
+    print(stats)
+end
