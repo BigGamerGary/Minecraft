@@ -64,6 +64,6 @@ while(true) do
         reactor.activate()
     end
     
-    rednet.broadcast(currentEnergy .. " " .. currentCoolant .. " " .. currentFuel .. " " .. currentHeatedCoolant .. " " .. currentWaste .. " " .. currentDamage .. " " .. temperature .. " " .. status)
+    rednet.broadcast(currentEnergy .. " " .. currentCoolant .. " " .. currentFuel .. " " .. currentHeatedCoolant .. " " .. currentWaste .. " " .. currentDamage .. " " .. temperature .. " " .. status, "Fission1BC")
     sleep(.5)
 end

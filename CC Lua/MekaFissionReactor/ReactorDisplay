@@ -26,7 +26,7 @@ rednet.open("left")
 monitorX,monitorY = monitor.getSize()
 
 function getStats()
-    id, stats, protocol = rednet.receive(60)
+    id, stats, protocol = rednet.receive("Fission1BC",60)
     splitStats = mysplit(stats)
     energy = math.floor(splitStats[1]*10000)/100
     coolant = math.floor(splitStats[2]*10000)/100
