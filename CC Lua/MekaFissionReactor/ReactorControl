@@ -26,33 +26,43 @@ rednet.open("left")
 print("Rednet Open")
 
 while(true) do
-    local currentEnergy = im.getEnergyFilledPercentage()
+    local currentEnergy = im.getEnergy()
+    local currentEnergyPercentage = im.getEnergyFilledPercentage()
 
-    local currentCoolant = reactor.getCoolantFilledPercentage()
-    local currentFuel = reactor.getFuelFilledPercentage()
+    local currentCoolant = reactor.getCoolant()
+    local currentCoolantPercentage = reactor.getCoolantFilledPercentage()
 
-    local currentHeatedCoolant = reactor.getHeatedCoolantFilledPercentage()
-    local currentWaste = reactor.getWasteFilledPercentage()
+    local currentFuel = reactor.getFuel()
+    local currentFuelPercentage = reactor.getFuelFilledPercentage()
+
+    local currentHeatedCoolant = reactor.getHeatedCoolant()
+    local currentHeatedCoolantPercentage = reactor.getHeatedCoolantFilledPercentage()
+    
+    local currentWaste = reactor.getWaste()
+    local currentWastePercentage = reactor.getWasteFilledPercentage()
 
     local currentDamage = MIN_DAMAGE - reactor.getDamagePercent()
+    
     local temperature = reactor.getTemperature()
+
+
 
     local status = (reactor.getStatus() and "Active" or "Inactive")
 
-    if(currentEnergy > MAX_THRESHOLD) then
-        print("Shutting Down: Energy " .. currentEnergy .. "/" .. 1)
+    if(currentEnergyPercentage > MAX_THRESHOLD) then
+        print("Shutting Down: Energy " .. currentEnergy .. "/" .. MAX_ENERGY)
         reactor.scram()
-    elseif(currentCoolant < MIN_THRESHOLD) then
-        print("Shutting Down: Coolant " .. currentCoolant .. "/" .. 1)
+    elseif(currentCoolantPercentage < MIN_THRESHOLD) then
+        print("Shutting Down: Coolant " .. currentCoolant .. "/" .. MAX_COOLANT)
         reactor.scram()
-    elseif(currentFuel < MIN_THRESHOLD) then
-        print("Shutting Down: Fuel " .. currentFuel .. "/" .. 1)
+    elseif(currentFuelPercentage < MIN_THRESHOLD) then
+        print("Shutting Down: Fuel " .. currentFuel .. "/" .. MAX_FUEL)
         reactor.scram()
-    elseif(currentHeatedCoolant > MIN_THRESHOLD) then
-        print("Shutting Down: Heated Coolant " .. currentHeatedCoolant .. "/" .. 1)
+    elseif(currentHeatedCoolantPercentage > MIN_THRESHOLD) then
+        print("Shutting Down: Heated Coolant " .. currentHeatedCoolant .. "/" .. MAX_HEATEDCOOLANT)
         reactor.scram()
-    elseif(currentWaste > MIN_THRESHOLD) then
-        print("Shutting Down: Waste " .. currentWaste .. "/" .. 1)
+    elseif(currentWastePercentage > MIN_THRESHOLD) then
+        print("Shutting Down: Waste " .. currentWaste .. "/" .. MAX_WASTE)
         reactor.scram()
     elseif(currentDamage < 100) then
         print("Shutting Down: Damage " .. currentDamage .. "/" .. 100)
@@ -60,10 +70,10 @@ while(true) do
     elseif(temperature > MAX_TEMPERATURE) then
         print("Shutting Down: Temperature " .. temperature .. "/" .. MAX_TEMPERATURE)
         reactor.scram()
-    elseif (currentEnergy < MIN_THRESHOLD) then
+    elseif (currentEnergyPercentage < MIN_THRESHOLD) then
         reactor.activate()
     end
     
-    rednet.broadcast(currentEnergy .. " " .. currentCoolant .. " " .. currentFuel .. " " .. currentHeatedCoolant .. " " .. currentWaste .. " " .. currentDamage .. " " .. temperature .. " " .. status, "Fission1BC")
+    rednet.broadcast(currentEnergyPercentage .. " " .. currentCoolantPercentage .. " " .. currentFuelPercentage .. " " .. currentHeatedCoolantPercentage .. " " .. currentWastePercentage .. " " .. currentDamage .. " " .. temperature .. " " .. status, "Fission1BC")
     sleep(.5)
 end
